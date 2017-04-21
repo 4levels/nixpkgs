@@ -102,6 +102,9 @@ let
       name = let hn = config.networking.hostName;
                  nn = if (hn != "") then hn else "unnamed";
           in "nixos-system-${nn}-${config.system.nixosLabel}";
+
+      passAsFile = [ "buildCommand" ];
+
       preferLocalBuild = true;
       allowSubstitutes = false;
       buildCommand = systemBuilder;
