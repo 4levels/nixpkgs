@@ -97,7 +97,7 @@ in {
 
       pools = mkOption {
         type = types.attrsOf (types.submodule (import ./pool-options.nix {
-          inherit lib;
+          inherit lib config;
         }));
         default = {};
         example = literalExample ''
