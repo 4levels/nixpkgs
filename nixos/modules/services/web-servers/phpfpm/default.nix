@@ -104,6 +104,7 @@ in {
          {
            mypool = {
              listen = "/path/to/unix/socket";
+             phpPackage = pkgs.php;
              extraConfig = '''
                user = nobody
                pm = dynamic
@@ -153,10 +154,10 @@ in {
           # XXX: We need AF_NETLINK to make the sendmail SUID binary from postfix work
           RestrictAddressFamilies = "AF_UNIX AF_INET AF_INET6 AF_NETLINK";
           Type = "notify";
-          ExecStart = "${cfg.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${phpIni}";
+          ExecStart = "${poolConfig.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${phpIni}";
           ExecReload = "${pkgs.coreutils}/bin/kill -USR2 $MAINPID";
         };
       }
-   );
+    );
   };
 }
