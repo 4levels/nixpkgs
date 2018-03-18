@@ -16,7 +16,7 @@ let
       listen = ${p.listen}
       ${p.extraConfig}
     '';
-  }
+  };
 
   fpmCfgFile = pool: poolConfig: pkgs.writeText "phpfpm-${pool}.conf" ''
     [global]
