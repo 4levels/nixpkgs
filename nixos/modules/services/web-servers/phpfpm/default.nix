@@ -10,10 +10,13 @@ let
 
   poolConfigs = cfg.poolConfigs // mapAttrs mkPool cfg.pools;
 
-  mkPool = n: p: ''
-    listen = ${p.listen}
-    ${p.extraConfig}
-  '';
+  mkPool = n: p: {
+    phpPackage = p.phpPackage;
+    config = ''
+      listen = ${p.listen}
+      ${p.extraConfig}
+    '';
+  }
 
   fpmCfgFile = pool: poolConfig: pkgs.writeText "phpfpm-${pool}.conf" ''
     [global]
@@ -22,7 +25,7 @@ let
     ${cfg.extraConfig}
 
     [${pool}]
-    ${poolConfig}
+    ${poolConfig.config}
   '';
 
   phpIni = pkgs.runCommand "php.ini" {
@@ -145,7 +148,7 @@ in {
           mkdir -p ${stateDir}
         '';
         serviceConfig = let
-          cfgFile = fpmCfgFile pool poolConfig;
+          cfgFile = fpmCfgFile pool poolConfig.config;
         in {
           Slice = "phpfpm.slice";
           PrivateDevices = true;
