@@ -25,7 +25,7 @@ let
     ${cfg.extraConfig}
 
     [${pool}]
-    ${poolConfig.config}
+    ${poolConfig}
   '';
 
   phpIni = pkgs.runCommand "php.ini" {
