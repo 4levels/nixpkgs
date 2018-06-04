@@ -10,10 +10,13 @@ let
 
   poolConfigs = cfg.poolConfigs // mapAttrs mkPool cfg.pools;
 
-  mkPool = n: p: ''
-    listen = ${p.listen}
-    ${p.extraConfig}
-  '';
+  mkPool = n: p: {
+    phpPackage = p.phpPackage;
+    config = ''
+      listen = ${p.listen}
+      ${p.extraConfig}
+    '';
+  };
 
   fpmCfgFile = pool: poolConfig: pkgs.writeText "phpfpm-${pool}.conf" ''
     [global]
@@ -97,13 +100,14 @@ in {
 
       pools = mkOption {
         type = types.attrsOf (types.submodule (import ./pool-options.nix {
-          inherit lib;
+          inherit lib config;
         }));
         default = {};
         example = literalExample ''
          {
            mypool = {
              listen = "/path/to/unix/socket";
+             phpPackage = pkgs.php;
              extraConfig = '''
                user = nobody
                pm = dynamic
@@ -144,7 +148,7 @@ in {
           mkdir -p ${stateDir}
         '';
         serviceConfig = let
-          cfgFile = fpmCfgFile pool poolConfig;
+          cfgFile = fpmCfgFile pool poolConfig.config;
         in {
           Slice = "phpfpm.slice";
           PrivateDevices = true;
@@ -153,7 +157,7 @@ in {
           # XXX: We need AF_NETLINK to make the sendmail SUID binary from postfix work
           RestrictAddressFamilies = "AF_UNIX AF_INET AF_INET6 AF_NETLINK";
           Type = "notify";
-          ExecStart = "${cfg.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${phpIni}";
+          ExecStart = "${poolConfig.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${phpIni}";
           ExecReload = "${pkgs.coreutils}/bin/kill -USR2 $MAINPID";
         };
       }
