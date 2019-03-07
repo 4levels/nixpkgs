@@ -7930,6 +7930,10 @@ in
   php = php72;
   phpPackages = php72Packages;
 
+  php56Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
+    php = php56;
+  });
+
   php71Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
     php = php71;
   });
@@ -7944,6 +7948,10 @@ in
 
   phpPackages-unit = php72Packages-unit;
 
+  php56Packages-unit = recurseIntoAttrs (callPackage ./php-packages.nix {
+    php = php56-unit;
+  });
+
   php71Packages-unit = recurseIntoAttrs (callPackage ./php-packages.nix {
     php = php71-unit;
   });
@@ -7957,11 +7965,17 @@ in
   });
 
   inherit (callPackages ../development/interpreters/php { })
+    php56
     php71
     php72
     php73;
 
   php-embed = php72-embed;
+
+  php56-embed = php56.override {
+    config.php.embed = true;
+    config.php.apxs2 = false;
+  };
 
   php71-embed = php71.override {
     config.php.embed = true;
@@ -7979,6 +7993,15 @@ in
   };
 
   php-unit = php72-unit;
+
+  php56-unit = php56.override {
+    config.php.embed = true;
+    config.php.apxs2 = false;
+    config.php.systemd = false;
+    config.php.phpdbg = false;
+    config.php.cgi = false;
+    config.php.fpm = false;
+  };
 
   php71-unit = php71.override {
     config.php.embed = true;
@@ -13708,6 +13731,7 @@ in
   neard = callPackage ../servers/neard { };
 
   unit = callPackage ../servers/http/unit {
+    php56 = php56-unit;
     php71 = php71-unit;
     php72 = php72-unit;
     php73 = php73-unit;
