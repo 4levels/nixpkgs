@@ -1,7 +1,7 @@
 diff -rupN a/bin/elasticsearch b/bin/elasticsearch
---- a/bin/elasticsearch	2017-05-17 10:53:49.444487071 +0200
-+++ b/bin/elasticsearch	2017-05-17 10:55:52.755081523 +0200
-@@ -129,12 +129,7 @@ ES_JAVA_OPTS="$(parse_jvm_options "$ES_J
+--- a/bin/elasticsearch	2017-02-08 18:32:28.000298543 -0500
++++ b/bin/elasticsearch	2017-02-08 19:10:45.692916675 -0500
+@@ -81,12 +81,7 @@ ES_HOME=`cd "$ES_HOME"; pwd`
  # If an include wasn't specified in the environment, then search for one...
  if [ "x$ES_INCLUDE" = "x" ]; then
      # Locations (in order) to use when searching for an include file.
@@ -16,11 +16,11 @@ diff -rupN a/bin/elasticsearch b/bin/elasticsearch
              . "$include"
              break
 diff -rupN a/bin/elasticsearch.in.sh b/bin/elasticsearch.in.sh
---- a/bin/elasticsearch.in.sh	2017-04-28 19:41:47.000000000 +0200
-+++ b/bin/elasticsearch.in.sh	2017-05-17 10:56:49.303519788 +0200
-@@ -1,13 +1 @@
- #!/bin/bash
--
+--- a/bin/elasticsearch.in.sh	2017-02-08 18:32:28.000298543 -0500
++++ b/bin/elasticsearch.in.sh	2017-02-08 18:33:46.816634599 -0500
+@@ -1,17 +1,5 @@
+ #!/bin/sh
+ 
 -# check in case a user was using this mechanism
 -if [ "x$ES_CLASSPATH" != "x" ]; then
 -    cat >&2 << EOF
@@ -31,4 +31,8 @@ diff -rupN a/bin/elasticsearch.in.sh b/bin/elasticsearch.in.sh
 -    exit 1
 -fi
 -
--ES_CLASSPATH="$ES_HOME/lib/*"
+-ES_CLASSPATH="$ES_HOME/lib/elasticsearch-2.4.4.jar:$ES_HOME/lib/*"
+-
+ if [ "x$ES_MIN_MEM" = "x" ]; then
+     ES_MIN_MEM=256m
+ fi
