@@ -7591,6 +7591,10 @@ with pkgs;
     php = php56;
   });
 
+  php70Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
+    php = php70;
+  });
+
   php71Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
     php = php71;
   });
@@ -7602,15 +7606,11 @@ with pkgs;
 
   inherit (callPackages ../development/interpreters/php { })
     php56
+    php70
     php71
     php72;
 
   php-embed = php72-embed;
-
-  php56-embed = php56.override {
-    config.php.embed = true;
-    config.php.apxs2 = false;
-  };
 
   php71-embed = php71.override {
     config.php.embed = true;

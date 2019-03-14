@@ -226,9 +226,15 @@ let
     };
 
 in {
+
   php56 = generic {
     version = "5.6.38";
     sha256 = "00xw7rcq36dlrzgx9nr96jc64gnnrxjxkkpmkr1y8fynpldj6nyn";
+  };
+
+  php70 = generic {
+    version = "7.0.32";
+    sha256 = "1qcjch3293h3fwci767x9rih3nrvz02rhn33hvx8l5q8kk7xis2n";
   };
 
   php71 = generic {
