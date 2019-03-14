@@ -304,7 +304,7 @@ let
 
   geoip111 = assert isPhp7; buildPecl {
     name = "geoip-1.1.1";
-    sha256 = "1fcqpsvwba84gqqmwyb5x5xhkazprwkpsnn4sv2gfbsd4svxxil5";
+    sha256 = "01hgijn91an7gf0fva5fk3paag6lvfh7ynlv4if16ilx041mrl5j";
 
     configureFlags = [ "--with-geoip=${pkgs.geoip}" ];
 
