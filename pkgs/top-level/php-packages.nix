@@ -291,10 +291,20 @@ let
     sha256 = "1ziap0py3zrc7qj9lw4nzq6wx1viyj8v9y1babchizzan014x6p5";
   };
 
-  # No support for PHP 7 yet
-  geoip = assert !isPhp7; buildPecl {
+  geoip = if isPhp7 then geoip111 else geoip110;
+
+  geoip110 = assert !isPhp7; buildPecl {
     name = "geoip-1.1.0";
     sha256 = "1fcqpsvwba84gqqmwyb5x5xhkazprwkpsnn4sv2gfbsd4svxxil2";
+
+    configureFlags = [ "--with-geoip=${pkgs.geoip}" ];
+
+    buildInputs = [ pkgs.geoip ];
+  };
+
+  geoip111 = assert isPhp7; buildPecl {
+    name = "geoip-1.1.1";
+    sha256 = "1fcqpsvwba84gqqmwyb5x5xhkazprwkpsnn4sv2gfbsd4svxxil5";
 
     configureFlags = [ "--with-geoip=${pkgs.geoip}" ];
 
