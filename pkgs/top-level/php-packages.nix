@@ -154,10 +154,11 @@ let
     configureFlags = [
       "--with-zlib-dir=${pkgs.zlib.dev}"
       "--with-libmemcached-dir=${pkgs.libmemcached}"
+      "--enable-memcached-igbinary"
     ];
 
     nativeBuildInputs = [ pkgs.pkgconfig ];
-    buildInputs = with pkgs; [ cyrus_sasl zlib ];
+    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
   };
 
   oci8 = buildPecl rec {
