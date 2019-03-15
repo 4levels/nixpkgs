@@ -89,7 +89,14 @@ let
   };
 
   igbinary = buildPecl {
-    name = "igbinary-2.0.4";
+    name = "igbinary-2.0.8";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "igbinary";
+      repo = "igbinary";
+      rev = "2.0.8";
+      sha256 = "0rdlrl7vh4kbxxj9yxp54xpnnrxydpa9fab7dy4nas474j5vb2bt";
+    };
 
     configureFlags = [ "--enable-igbinary" ];
 
@@ -97,7 +104,6 @@ let
 
     outputs = [ "out" "dev" ];
 
-    sha256 = "0a55l4f0bgbf3f6sh34njd14niwagg829gfkvb8n5fs69xqab67d";
   };
 
   mailparse = assert isPhp7; buildPecl {
@@ -146,13 +152,12 @@ let
     name = "memcached-php7";
 
     nativeBuildInputs = [ pkgs.pkgconfig ];
-    buildInputs = [ pkgs.cyrus_sasl pkgs.zlib igbinary pcs ];
-    # buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
+    buildInputs = [ pkgs.cyrus_sasl pkgs.zlib igbinary ];
 
     src = fetchgit {
       url = "https://github.com/php-memcached-dev/php-memcached";
-      rev = "e573a6e8fc815f12153d2afd561fc84f74811e2f";
-      sha256 = "0asfi6rsspbwbxhwmkxxnapd8w01xvfmwr1n9qsr2pryfk0w6y07";
+      rev = "v3.1.3";
+      sha256 = "0asfi6rsspbwbxhwmkxxnapd8w01xvfmwr1n9qsr2pryfk0w6ya7";
     };
 
     configureFlags = [
