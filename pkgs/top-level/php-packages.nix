@@ -164,8 +164,8 @@ let
 
     patches = [
       (pkgs.writeText "php-memcached.patch" ''
-        --- config.m4
-        +++ config.m4
+        --- a/config.m4
+        +++ b/config.m4
         @@ -142,6 +142,8 @@ if test "$PHP_MEMCACHED" != "no"; then
                igbinary_inc_path="$phpincludedir"
              elif test -f "$phpincludedir/ext/igbinary/igbinary.h"; then
