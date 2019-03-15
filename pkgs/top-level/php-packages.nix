@@ -146,7 +146,8 @@ let
     name = "memcached-php7";
 
     nativeBuildInputs = [ pkgs.pkgconfig ];
-    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
+    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
+    # buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
 
     src = fetchgit {
       url = "https://github.com/php-memcached-dev/php-memcached";
