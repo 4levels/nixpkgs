@@ -145,6 +145,8 @@ let
   memcachedPhp7 = assert isPhp7; buildPecl rec {
     name = "memcached-php7";
 
+    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
+
     src = fetchgit {
       url = "https://github.com/php-memcached-dev/php-memcached";
       rev = "e573a6e8fc815f12153d2afd561fc84f74811e2f";
@@ -172,10 +174,6 @@ let
                  if test -f "$prefix/include/$i/ext/igbinary/igbinary.h"; then
       '')
     ];
-
-    nativeBuildInputs = [ pkgs.pkgconfig ];
-    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
-
   };
 
   oci8 = buildPecl rec {
