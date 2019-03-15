@@ -95,7 +95,7 @@ let
       owner = "igbinary";
       repo = "igbinary";
       rev = "2.0.8";
-      sha256 = "0rdlrl7vh4kbxxj9yxp54xpnnrxydpa9fab7dy4nas474j5vb2bt";
+      sha256 = "07n6as68f5id9v027973jcbmlnnn49gwjjivkbrvdwky7gqlhi72";
     };
 
     configureFlags = [ "--enable-igbinary" ];
@@ -157,7 +157,7 @@ let
     src = fetchgit {
       url = "https://github.com/php-memcached-dev/php-memcached";
       rev = "v3.1.3";
-      sha256 = "0asfi6rsspbwbxhwmkxxnapd8w01xvfmwr1n9qsr2pryfk0w6ya7";
+      sha256 = "1w9g8k7bmq3nbzskskpsr5632gh9q75nqy7nkjdzgs17klq9khjk";
     };
 
     configureFlags = [
