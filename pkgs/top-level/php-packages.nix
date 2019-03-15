@@ -146,7 +146,7 @@ let
     name = "memcached-php7";
 
     nativeBuildInputs = [ pkgs.pkgconfig ];
-    buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
+    buildInputs = with pkgs; [ cyrus_sasl zlib ];
     # buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
 
     src = fetchgit {
@@ -158,24 +158,24 @@ let
     configureFlags = [
       "--with-zlib-dir=${pkgs.zlib.dev}"
       "--with-libmemcached-dir=${pkgs.libmemcached}"
-      "--enable-memcached-igbinary"
+      # "--enable-memcached-igbinary"
     ];
 
-    patches = [
-      (pkgs.writeText "php-memcached.patch" ''
-        --- a/config.m4
-        +++ b/config.m4
-        @@ -142,6 +142,8 @@ if test "$PHP_MEMCACHED" != "no"; then
-               igbinary_inc_path="$phpincludedir"
-             elif test -f "$phpincludedir/ext/igbinary/igbinary.h"; then
-               igbinary_inc_path="$phpincludedir"
-        +    elif test -f "${igbinary.dev}/include/ext/igbinary/igbinary.h"; then
-        +      igbinary_inc_path="${igbinary.dev}/include"
-             else
-               for i in php php4 php5 php6; do
-                 if test -f "$prefix/include/$i/ext/igbinary/igbinary.h"; then
-      '')
-    ];
+    # patches = [
+    #   (pkgs.writeText "php-memcached.patch" ''
+    #     --- a/config.m4
+    #     +++ b/config.m4
+    #     @@ -142,6 +142,8 @@ if test "$PHP_MEMCACHED" != "no"; then
+    #            igbinary_inc_path="$phpincludedir"
+    #          elif test -f "$phpincludedir/ext/igbinary/igbinary.h"; then
+    #            igbinary_inc_path="$phpincludedir"
+    #     +    elif test -f "${igbinary.dev}/include/ext/igbinary/igbinary.h"; then
+    #     +      igbinary_inc_path="${igbinary.dev}/include"
+    #          else
+    #            for i in php php4 php5 php6; do
+    #              if test -f "$prefix/include/$i/ext/igbinary/igbinary.h"; then
+    #   '')
+    # ];
   };
 
   oci8 = buildPecl rec {
