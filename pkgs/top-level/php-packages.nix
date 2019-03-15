@@ -158,15 +158,49 @@ let
     configureFlags = [
       "--with-zlib-dir=${pkgs.zlib.dev}"
       "--with-libmemcached-dir=${pkgs.libmemcached}"
+      "--with-igbinary-dir=${pkgs."php${phpPkgsVersion}Packages".igbinary}"
       "--enable-memcached-igbinary"
+    ];
+
+    patches = [
+      (pkgs.writeText "php-memcached-dev.patch" ''
+        --- config.m4.orig	2019-03-15 12:16:59.812103860 +0100
+        +++ config.m4.patch	2019-03-15 12:29:51.458893352 +0100
+        @@ -3,9 +3,12 @@
+        PHP_ARG_ENABLE(memcached, whether to enable memcached support,
+        [  --enable-memcached              Enable memcached support])
+
+        -PHP_ARG_WITH(libmemcached-dir,  for libmemcached,
+        +PHP_ARG_WITH(libmemcached-dir, for libmemcached,
+        [  --with-libmemcached-dir=DIR     Set the path to libmemcached install prefix.], yes)
+
+        +PHP_ARG_WITH(igbinary-dir, for igbinary,
+        +[  --with-igbinary-dir=DIR         Set the path to igbinary install prefix.], yes)
+        +
+        PHP_ARG_ENABLE(memcached-session, whether to enable memcached session handler support,
+        [  --enable-memcached-session      Enable memcached session handler support], yes, no)
+
+        @@ -134,7 +137,13 @@
+            AC_MSG_CHECKING([for igbinary includes])
+            igbinary_inc_path=""
+
+        -    if test -f "$abs_srcdir/include/php/ext/igbinary/igbinary.h"; then
+        +    if test "$PHP_IGBINARY_DIR" != "no" && test "$PHP_IGBINARY_DIR" != "yes"; then
+        +      if test -f "$PHP_IGBINARY_DIR/include/ext/igbinary/igbinary.h"; then
+        +        igbinary_inc_path="$PHP_IGBINARY_DIR/include"
+        +      else
+        +        AC_MSG_ERROR([Can't find IGBINARY headers under "$PHP_IGBINARY_DIR"])
+        +      fi
+        +    elif test -f "$abs_srcdir/include/php/ext/igbinary/igbinary.h"; then
+              igbinary_inc_path="$abs_srcdir/include/php"
+            elif test -f "$abs_srcdir/ext/igbinary/igbinary.h"; then
+              igbinary_inc_path="$abs_srcdir"
+      '')
     ];
 
     nativeBuildInputs = [ pkgs.pkgconfig ];
     buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
 
-    makeFlags = [ "phpincludedir=${pkgs."php${phpPkgsVersion}Packages".igbinary}/include" ];
-
-    # outputs = [ "out" "dev" ];
   };
 
   oci8 = buildPecl rec {
