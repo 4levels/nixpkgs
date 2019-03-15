@@ -154,7 +154,6 @@ let
     configureFlags = [
       "--with-zlib-dir=${pkgs.zlib.dev}"
       "--with-libmemcached-dir=${pkgs.libmemcached}"
-      "--with-igbinary-dir=${pkgs."php${phpPkgsVersion}Packages".igbinary}"
       "--enable-memcached-igbinary"
     ];
 
