@@ -8,6 +8,10 @@ let
     };
   isPhpOlder55 = pkgs.lib.versionOlder php.version "5.5";
   isPhp7 = pkgs.lib.versionAtLeast php.version "7.0";
+  # isPhp70 = pkgs.lib.versionAtLeast php.version "7.0" && pkgs.lib.versionOlder php.version "7.1";
+  # isPhp71 = pkgs.lib.versionAtLeast php.version "7.1" && pkgs.lib.versionOlder php.version "7.2";
+  # isPhp72 = pkgs.lib.versionAtLeast php.version "7.2" && pkgs.lib.versionOlder php.version "7.3";
+  phpPkgsVersion = builtins.substring 0 2 (builtins.replaceStrings ["."] [""] php.version);
 
   apcu = if isPhp7 then apcu51 else apcu40;
 
@@ -160,9 +164,9 @@ let
     nativeBuildInputs = [ pkgs.pkgconfig ];
     buildInputs = with pkgs; [ cyrus_sasl zlib igbinary ];
 
-    makeFlags = [ "phpincludedir=$(dev)/include" ];
+    makeFlags = [ "phpincludedir=${pkgs."php${phpPkgsVersion}Packages".igbinary}/include" ];
 
-    outputs = [ "out" "dev" ];
+    # outputs = [ "out" "dev" ];
   };
 
   oci8 = buildPecl rec {
