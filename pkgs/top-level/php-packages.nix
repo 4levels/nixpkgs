@@ -145,6 +145,7 @@ let
   memcachedPhp7 = assert isPhp7; buildPecl rec {
     name = "memcached-php7";
 
+    nativeBuildInputs = [ pkgs.pkgconfig ];
     buildInputs = with pkgs; [ cyrus_sasl zlib igbinary pcs libmemcached ];
 
     src = fetchgit {
