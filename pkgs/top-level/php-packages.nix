@@ -163,18 +163,18 @@ let
     ];
 
     patches = [
-      (pkgs.writeText "php-memcached-dev.patch" ''
+      (pkgs.writeText "php-memcached.patch" ''
         --- config.m4
         +++ config.m4
-        @@ -148,6 +148,8 @@
-                   igbinary_inc_path="$prefix/include/$i"
-                 fi
-               done
+        @@ -142,6 +142,8 @@ if test "$PHP_MEMCACHED" != "no"; then
+               igbinary_inc_path="$phpincludedir"
+             elif test -f "$phpincludedir/ext/igbinary/igbinary.h"; then
+               igbinary_inc_path="$phpincludedir"
         +    elif test -f "${igbinary.dev}/include/ext/igbinary/igbinary.h"; then
         +      igbinary_inc_path="${igbinary.dev}/include"
-             fi
-
-             if test "$igbinary_inc_path" = ""; then
+             else
+               for i in php php4 php5 php6; do
+                 if test -f "$prefix/include/$i/ext/igbinary/igbinary.h"; then
       '')
     ];
 
