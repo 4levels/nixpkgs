@@ -339,13 +339,13 @@ let
   leveldb2 = assert isPhp7; buildPecl {
     name = "leveldb-0.2.1";
     sha256 = "1ih21mcirjrw1rlrpq1ciirm2nrkx1nildiidpwnhwb0givn4zw7";
-    buildInputs = [ pkgs.re2c ];
+    buildInputs = [ pkgs.re2c pkgs.leveldb ];
   };
 
   leveldb1 = assert !isPhp7; buildPecl {
     name = "leveldb-0.1.5";
     sha256 = "0aj37fq8zi2aq2xslrsqhihhcl4hy2gqxx0mxd5668vpcnyjhhxi";
-    buildInputs = [ pkgs.re2c ];
+    buildInputs = [ pkgs.re2c pkgs.leveldb ];
   };
 
   redis = if isPhp7 then redis31 else redis22;
