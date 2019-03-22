@@ -339,7 +339,7 @@ let
 
   leveldb2 = assert isPhp7; buildPecl {
     name = "leveldb-0.2.1";
-    sha256 = "05s2zdzr0qqwz6pcbkg3bdsbikp7nr5agf6w2s1w5zzbik5kyjl0";
+    sha256 = "1ih21mcirjrw1rlrpq1ciirm2nrkx1nildiidpwnhwb0givn4zw7";
   };
 
   leveldb1 = assert !isPhp7; buildPecl {
