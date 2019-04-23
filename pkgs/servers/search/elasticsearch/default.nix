@@ -1,4 +1,4 @@
-{ enableUnfree ? true, stdenv, fetchurl, makeWrapper, jre, utillinux, getopt, zlib }:
+{ stdenv, fetchurl, makeWrapper, jre, utillinux, getopt }:
 
 with stdenv.lib;
 
@@ -11,16 +11,6 @@ stdenv.mkDerivation rec {
   };
 
   patches = [ ./es-home.patch ];
-
-  postPatch = ''
-    substituteInPlace bin/elasticsearch-env --replace \
-      "ES_CLASSPATH=\"\$ES_HOME/lib/\*\"" \
-      "ES_CLASSPATH=\"$out/lib/*\""
-
-    substituteInPlace bin/elasticsearch-cli --replace \
-      "ES_CLASSPATH=\"\$ES_CLASSPATH:\$ES_HOME/\$additional_classpath_directory/\*\"" \
-      "ES_CLASSPATH=\"\$ES_CLASSPATH:$out/\$additional_classpath_directory/\*\""
-  '';
 
   buildInputs = [ makeWrapper jre ]
              ++ (if (!stdenv.isDarwin) then [utillinux] else [getopt]);
