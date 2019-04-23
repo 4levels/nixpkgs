@@ -31,6 +31,7 @@ let
       (pkgs.writeTextDir "elasticsearch.yml" esConfig)
       (if es5 then (pkgs.writeTextDir "log4j2.properties" cfg.logging)
               else (pkgs.writeTextDir "logging.yml" cfg.logging))
+      (if builtins.stringLength cfg.stopWords > 0 then pkgs.writeTextDir "stopwords.txt" cfg.stopWords else "")
     ];
     postBuild = concatStringsSep "\n" (concatLists [
       # Elasticsearch 5.x won't start when the scripts directory does not exist
@@ -96,6 +97,17 @@ in {
         node.name: "elasticsearch"
         node.master: true
         node.data: false
+      '';
+    };
+
+    stopWords = mkOption {
+      description = "Contents of the default stopwords filee";
+      default = "";
+      type = types.str;
+      example = ''
+        quot
+        og
+        i
       '';
     };
 
