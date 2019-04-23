@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, makeWrapper, jre, utillinux, getopt }:
+{ enableUnfree ? true, stdenv, fetchurl, makeWrapper, jre, utillinux, getopt, zlib }:
 
 with stdenv.lib;
 
@@ -22,11 +22,8 @@ stdenv.mkDerivation rec {
       "ES_CLASSPATH=\"\$ES_CLASSPATH:$out/\$additional_classpath_directory/\*\""
   '';
 
-  buildInputs = [ makeWrapper jre_headless utillinux ]
-             ++ optional enableUnfree zlib;
-
-  # buildInputs = [ makeWrapper jre ]
-  #            ++ (if (!stdenv.isDarwin) then [utillinux] else [getopt]);
+  buildInputs = [ makeWrapper jre ]
+             ++ (if (!stdenv.isDarwin) then [utillinux] else [getopt]);
 
   installPhase = ''
     mkdir -p $out
