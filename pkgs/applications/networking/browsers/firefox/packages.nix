@@ -20,14 +20,15 @@ rec {
 
   firefox = common rec {
     pname = "firefox";
-    version = "63.0.3";
+
+    version = "66.0.3";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${version}/source/firefox-${version}.source.tar.xz";
-      sha512 = "319bdkvk1r53i8l9ilz9ffllp2yxn02glhjsf26bqchw0c4ym8y6d62j1g7s55lddzqka3kcsmzba0k8wna1aw3pydf7v84nyhaw1bc";
+      sha512 = "31pfzgys4dv4fskaasz47fviksjj9xp60r875q0i7z1n6kx25fzkpsg18a98fkqm3g8qmljccy93w68ysywnh1zzrv8djsaza7l0mz8";
     };
 
     patches = nixpkgsPatches ++ [
-      ./no-buildconfig.patch
+      ./no-buildconfig-ffx65.patch
     ];
 
     extraNativeBuildInputs = [ python3 ];
@@ -35,7 +36,7 @@ rec {
     meta = {
       description = "A web browser built from Firefox source tree";
       homepage = http://www.mozilla.com/en-US/firefox/;
-      maintainers = with lib.maintainers; [ eelco ];
+      maintainers = with lib.maintainers; [ eelco andir ];
       platforms = lib.platforms.unix;
       license = lib.licenses.mpl20;
     };
@@ -70,14 +71,14 @@ rec {
 
   firefox-esr-60 = common rec {
     pname = "firefox-esr";
-    version = "60.3.0esr";
+    version = "60.6.1esr";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${version}/source/firefox-${version}.source.tar.xz";
-      sha512 = "7ded25a38835fbd73a58085e24ad83308afee1784a3bf853d75093c1500ad46988f5865c106abdae938cfbd1fb10746cc1795ece7994fd7eba8a002158cf1bcd";
+      sha512 = "3nl3cisn1sw3y6dxnv0bm143dpp091h1s9j7g73qfx5s6sfxl832lan177ikm00ay7fsly251vi1xz17wwicch1himsmhjisnd3ws51";
     };
 
     patches = nixpkgsPatches ++ [
-      ./no-buildconfig.patch
+      ./no-buildconfig-ffx65.patch
 
       # this one is actually an omnipresent bug
       # https://bugzilla.mozilla.org/show_bug.cgi?id=1444519

@@ -10,7 +10,8 @@
 , hunspell, libevent, libstartup_notification, libvpx
 , icu, libpng, jemalloc, glib
 , autoconf213, which, gnused, cargo, rustc, llvmPackages
-, rust-cbindgen, nodejs, rust_1_29
+, rust-cbindgen, rust-cbindgen_0_6_7, nodejs, rust_1_31
+, nasm, rust-cbindgen_0_8_0
 , debugBuild ? false
 
 ### optionals
@@ -86,6 +87,11 @@ stdenv.mkDerivation (rec {
 
   inherit src patches meta;
 
+  # Ignore trivial whitespace changes in patches, this fixes compatibility of
+  # ./env_var_for_system_dir.patch with Firefox >=65 without having to track
+  # two patches.
+  patchFlags = [ "-p1" "-l" ];
+
   buildInputs = [
     gtk2 perl zip libIDL libjpeg zlib bzip2
     dbus dbus-glib pango freetype fontconfig xorg.libXi xorg.libXcursor
@@ -96,8 +102,14 @@ stdenv.mkDerivation (rec {
     libevent libstartup_notification libvpx /* cairo */
     icu libpng jemalloc glib
   ]
-  ++ lib.optionals (!isTorBrowserLike) [ nss ]
+  ++ lib.optionals (!isTorBrowserLike) [ nspr nss ]
   ++ lib.optional (lib.versionOlder version "61") hunspell
+
+  # >= 66 requires nasm for the AV1 lib dav1d
+  # yasm can potentially be removed in future versions
+  # https://bugzilla.mozilla.org/show_bug.cgi?id=1501796
+  # https://groups.google.com/forum/#!msg/mozilla.dev.platform/o-8levmLU80/SM_zQvfzCQAJ
+  ++ lib.optional (lib.versionAtLeast version "66") nasm
   ++ lib.optional  alsaSupport alsaLib
   ++ lib.optional  pulseaudioSupport libpulseaudio # only headers are needed
   ++ lib.optionals ffmpegSupport [ gstreamer gst-plugins-base ]
@@ -127,8 +139,15 @@ stdenv.mkDerivation (rec {
   nativeBuildInputs =
     [ autoconf213 which gnused pkgconfig perl python2 ]
     ++ (if (lib.versionAtLeast version "63") then [
-      rust-cbindgen nodejs rust_1_29.rustc rust_1_29.cargo
+      nodejs rust_1_31.rustc rust_1_31.cargo
     ] else [ cargo rustc ])
+    ++ (if (lib.versionAtLeast version "64" && lib.versionOlder version "66") then [
+      rust-cbindgen_0_6_7
+    ] else if (lib.versionAtLeast version "66") then [
+      rust-cbindgen_0_8_0
+    ] else [
+      rust-cbindgen
+    ])
     ++ lib.optional gtk3Support wrapGAppsHook
     ++ lib.optionals stdenv.isDarwin [ xcbuild rsync ]
     ++ extraNativeBuildInputs;
@@ -167,9 +186,19 @@ stdenv.mkDerivation (rec {
     # Note: These are for NixOS/nixpkgs use ONLY. For your own distribution,
     # please get your own set of keys.
     echo "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI" > $TMPDIR/ga
-    configureFlagsArray+=("--with-google-api-keyfile=$TMPDIR/ga")
+    # 60.5+ & 66+ did split the google API key arguments: https://bugzilla.mozilla.org/show_bug.cgi?id=1531176
+    ${if (lib.versionAtLeast version "60.6" && lib.versionOlder version "61") || (lib.versionAtLeast version "66") then ''
+      configureFlagsArray+=("--with-google-location-service-api-keyfile=$TMPDIR/ga")
+      configureFlagsArray+=("--with-google-safebrowsing-api-keyfile=$TMPDIR/ga")
+    '' else ''
+      configureFlagsArray+=("--with-google-api-keyfile=$TMPDIR/ga")
+    ''}
   '' + lib.optionalString (lib.versionOlder version "58") ''
     cd obj-*
+  ''
+  # AS=as in the environment causes build failure https://bugzilla.mozilla.org/show_bug.cgi?id=1497286
+  + lib.optionalString (lib.versionAtLeast version "64") ''
+    unset AS
   '';
 
   configureFlags = [
@@ -191,10 +220,10 @@ stdenv.mkDerivation (rec {
     "--disable-necko-wifi" # maybe we want to enable this at some point
     "--disable-updater"
     "--enable-jemalloc"
-    "--disable-maintenance-service"
     "--disable-gconf"
     "--enable-default-toolkit=${default-toolkit}"
   ]
+  ++ lib.optional (lib.versionOlder version "64") "--disable-maintenance-service"
   ++ lib.optional (stdenv.isDarwin && lib.versionAtLeast version "61") "--disable-xcode-checks"
   ++ lib.optional (lib.versionOlder version "61") "--enable-system-hunspell"
   ++ lib.optionals (lib.versionAtLeast version "56") [

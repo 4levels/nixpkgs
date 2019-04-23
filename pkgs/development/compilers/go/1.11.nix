@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, tzdata, iana-etc, go_bootstrap, runCommand, writeScriptBin
+{ stdenv, fetchurl, tzdata, iana-etc, go_bootstrap, runCommand, writeScriptBin
 , perl, which, pkgconfig, patch, procps
 , pcre, cacert, llvm
 , Security, Foundation
@@ -25,13 +25,11 @@ in
 
 stdenv.mkDerivation rec {
   name = "go-${version}";
-  version = "1.11";
+  version = "1.11.6";
 
-  src = fetchFromGitHub {
-    owner = "golang";
-    repo = "go";
-    rev = "go${version}";
-    sha256 = "1k18d6rkijlgzn1zw4wphzcv6a6w9hb1msgrsh1102jb18644f2q";
+  src = fetchurl {
+    url = "https://dl.google.com/go/go${version}.src.tar.gz";
+    sha256 = "0cz1sdhxf9283p1p4jxb020pym0ncd0qlfh36r3hkv6bbm1a2vd9";
   };
 
   GOCACHE = "off";
@@ -117,7 +115,7 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./remove-tools-1.11.patch
-    ./ssl-cert-file-1.9.patch
+    ./ssl-cert-file-1.12.1.patch
     ./remove-test-pie.patch
     ./creds-test.patch
     ./go-1.9-skip-flaky-19608.patch
@@ -186,7 +184,7 @@ stdenv.mkDerivation rec {
   disallowedReferences = [ go_bootstrap ];
 
   meta = with stdenv.lib; {
-    branch = "1.9";
+    branch = "1.11";
     homepage = http://golang.org/;
     description = "The Go Programming language";
     license = licenses.bsd3;

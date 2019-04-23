@@ -238,16 +238,16 @@ in {
   };
 
   php71 = generic {
-    version = "7.1.24";
-    sha256 = "02qy76krbdhlbkzs9k1sa5mgmj0qnbb8gcf1j3q0cq3z7kkj9pk6";
+    version = "7.1.27";
+    sha256 = "0jzcyilvdy05w30vz5ln46lqm9hi36h5bibiwhl1b4a1179yrmys";
 
     # https://bugs.php.net/bug.php?id=76826
     extraPatches = optional stdenv.isDarwin ./php71-darwin-isfinite.patch;
   };
 
   php72 = generic {
-    version = "7.2.12";
-    sha256 = "1dpnbsv4bdlc5v40ddddi971f456jp1qrn89w5di1dj70g1c895p";
+    version = "7.2.16";
+    sha256 = "0f3zkv803banqdrhj5ixfg973fnrsvn4hcij2k6r91nmac0d22ic";
 
     # https://bugs.php.net/bug.php?id=76826
     extraPatches = optional stdenv.isDarwin ./php72-darwin-isfinite.patch;

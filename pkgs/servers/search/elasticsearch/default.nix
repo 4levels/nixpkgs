@@ -12,8 +12,21 @@ stdenv.mkDerivation rec {
 
   patches = [ ./es-home.patch ];
 
-  buildInputs = [ makeWrapper jre ] ++
-    (if (!stdenv.isDarwin) then [utillinux] else [getopt]);
+  postPatch = ''
+    substituteInPlace bin/elasticsearch-env --replace \
+      "ES_CLASSPATH=\"\$ES_HOME/lib/\*\"" \
+      "ES_CLASSPATH=\"$out/lib/*\""
+
+    substituteInPlace bin/elasticsearch-cli --replace \
+      "ES_CLASSPATH=\"\$ES_CLASSPATH:\$ES_HOME/\$additional_classpath_directory/\*\"" \
+      "ES_CLASSPATH=\"\$ES_CLASSPATH:$out/\$additional_classpath_directory/\*\""
+  '';
+
+  buildInputs = [ makeWrapper jre_headless utillinux ]
+             ++ optional enableUnfree zlib;
+
+  # buildInputs = [ makeWrapper jre ]
+  #            ++ (if (!stdenv.isDarwin) then [utillinux] else [getopt]);
 
   installPhase = ''
     mkdir -p $out

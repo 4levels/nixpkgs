@@ -78,6 +78,7 @@
   ./misc/version.nix
   ./programs/adb.nix
   ./programs/atop.nix
+  ./programs/autojump.nix
   ./programs/bash/bash.nix
   ./programs/bcc.nix
   ./programs/blcr.nix
@@ -293,6 +294,7 @@
   ./services/logging/graylog.nix
   ./services/logging/heartbeat.nix
   ./services/logging/journalbeat.nix
+  ./services/logging/journaldriver.nix
   ./services/logging/journalwatch.nix
   ./services/logging/klogd.nix
   ./services/logging/logcheck.nix

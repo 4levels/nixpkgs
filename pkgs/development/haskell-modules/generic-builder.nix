@@ -70,8 +70,13 @@ in
 , coreSetup ? false # Use only core packages to build Setup.hs.
 , useCpphs ? false
 , hardeningDisable ? stdenv.lib.optional (ghc.isHaLVM or false) "all"
+, enableSeparateBinOutput ? false
 , enableSeparateDataOutput ? false
 , enableSeparateDocOutput ? doHaddock
+, # Don't fail at configure time if there are multiple versions of the
+  # same package in the (recursive) dependencies of the package being
+  # built. Will delay failures, if any, to compile time.
+  allowInconsistentDependencies ? false
 } @ args:
 
 assert editedCabalFile != null -> revision != null;
@@ -102,6 +107,8 @@ let
 
   # the target dir for haddock documentation
   docdir = docoutput: docoutput + "/share/doc/" + pname + "-" + version;
+
+  binDir = if enableSeparateBinOutput then "$bin/bin" else "$out/bin";
 
   newCabalFileUrl = "http://hackage.haskell.org/package/${pname}-${version}/revision/${revision}.cabal";
   newCabalFile = fetchurl {
@@ -135,7 +142,10 @@ let
   buildFlagsString = optionalString (buildFlags != []) (" " + concatStringsSep " " buildFlags);
 
   defaultConfigureFlags = [
-    "--verbose" "--prefix=$out" "--libdir=\\$prefix/lib/\\$compiler" "--libsubdir=\\$abi/\\$libname"
+    "--verbose"
+    "--prefix=$out"
+    "--libdir=\\$prefix/lib/\\$compiler"
+    "--libsubdir=\\$abi/\\$libname"
     (optionalString enableSeparateDataOutput "--datadir=$data/share/${ghc.name}")
     (optionalString enableSeparateDocOutput "--docdir=${docdir "$doc"}")
     "--with-gcc=$CC" # Clang won't work without that extra information.
@@ -164,7 +174,8 @@ let
     "--ghcjs"
   ] ++ optionals isCross ([
     "--configure-option=--host=${stdenv.hostPlatform.config}"
-  ] ++ crossCabalFlags);
+  ] ++ crossCabalFlags
+  ) ++ optionals enableSeparateBinOutput ["--bindir=${binDir}"];
 
   setupCompileFlags = [
     (optionalString (!coreSetup) "-${nativePackageDbFlag}=$setupPackageConfDir")
@@ -215,7 +226,10 @@ assert allPkgconfigDepends != [] -> pkgconfig != null;
 stdenv.mkDerivation ({
   name = "${pname}-${version}";
 
-  outputs = [ "out" ] ++ (optional enableSeparateDataOutput "data") ++ (optional enableSeparateDocOutput "doc");
+  outputs = [ "out" ]
+         ++ (optional enableSeparateDataOutput "data")
+         ++ (optional enableSeparateDocOutput "doc")
+         ++ (optional enableSeparateBinOutput "bin");
   setOutputFlags = false;
 
   pos = builtins.unsafeGetAttrPos "pname" args;
@@ -333,11 +347,12 @@ stdenv.mkDerivation ({
 
     echo configureFlags: $configureFlags
     ${setupCommand} configure $configureFlags 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
-    if ${gnugrep}/bin/egrep -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
-      echo >&2 "*** abort because of serious configure-time warning from Cabal"
-      exit 1
-    fi
-
+    ${stdenv.lib.optionalString (!allowInconsistentDependencies) ''
+      if ${gnugrep}/bin/egrep -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
+        echo >&2 "*** abort because of serious configure-time warning from Cabal"
+        exit 1
+      fi
+    ''}
     export GHC_PACKAGE_PATH="$packageConfDir:"
 
     runHook postConfigure
@@ -389,7 +404,7 @@ stdenv.mkDerivation ({
       find $packageConfDir -maxdepth 0 -empty -delete;
     ''}
     ${optionalString isGhcjs ''
-      for exeDir in "$out/bin/"*.jsexe; do
+      for exeDir in "${binDir}/"*.jsexe; do
         exe="''${exeDir%.jsexe}"
         printWords '#!${nodejs}/bin/node' > "$exe"
         echo >> "$exe"
@@ -399,7 +414,7 @@ stdenv.mkDerivation ({
     ''}
     ${optionalString doCoverage "mkdir -p $out/share && cp -r dist/hpc $out/share"}
     ${optionalString (enableSharedExecutables && isExecutable && !isGhcjs && stdenv.isDarwin && stdenv.lib.versionOlder ghc.version "7.10") ''
-      for exe in "$out/bin/"* ; do
+      for exe in "${binDir}/"* ; do
         install_name_tool -add_rpath "$out/lib/ghc-${ghc.version}/${pname}-${version}" "$exe"
       done
     ''}
