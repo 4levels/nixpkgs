@@ -8,28 +8,38 @@ let
 
   stateDir = "/run/phpfpm";
 
-  poolConfigs = cfg.poolConfigs // mapAttrs mkPool cfg.pools;
+  poolConfigs =
+    (mapAttrs mapPoolConfig cfg.poolConfigs) //
+    (mapAttrs mapPool cfg.pools);
 
-  mkPool = n: p: {
+  mapPoolConfig = n: p: {
+    phpPackage = cfg.phpPackage;
+    phpOptions = cfg.phpOptions;
+    config = p;
+  };
+
+  mapPool = n: p: {
     phpPackage = p.phpPackage;
+    phpOptions = p.phpOptions;
     config = ''
       listen = ${p.listen}
       ${p.extraConfig}
     '';
   };
 
-  fpmCfgFile = pool: poolConfig: pkgs.writeText "phpfpm-${pool}.conf" ''
+  fpmCfgFile = pool: conf: pkgs.writeText "phpfpm-${pool}.conf" ''
     [global]
     error_log = syslog
     daemonize = no
     ${cfg.extraConfig}
 
     [${pool}]
-    ${poolConfig}
+    ${conf}
   '';
 
-  phpIni = pkgs.runCommand "php.ini" {
-    inherit (cfg) phpPackage phpOptions;
+  phpIni = pool: pkgs.runCommand "php.ini" {
+    inherit (pool) phpPackage phpOptions;
+    preferLocalBuild = true;
     nixDefaults = ''
       sendmail_path = "/run/wrappers/bin/sendmail -t -i"
     '';
@@ -149,6 +159,7 @@ in {
         '';
         serviceConfig = let
           cfgFile = fpmCfgFile pool poolConfig.config;
+          iniFile = phpIni poolConfig;
         in {
           Slice = "phpfpm.slice";
           PrivateDevices = true;
@@ -157,7 +168,7 @@ in {
           # XXX: We need AF_NETLINK to make the sendmail SUID binary from postfix work
           RestrictAddressFamilies = "AF_UNIX AF_INET AF_INET6 AF_NETLINK";
           Type = "notify";
-          ExecStart = "${poolConfig.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${phpIni}";
+          ExecStart = "${poolConfig.phpPackage}/bin/php-fpm -y ${cfgFile} -c ${iniFile}";
           ExecReload = "${pkgs.coreutils}/bin/kill -USR2 $MAINPID";
         };
       }
