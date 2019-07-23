@@ -32,6 +32,20 @@ let
     sha256 = "0vv2w5fkkw9n7qdmi5aq50416zxmvyzjym8kb6j1v8kd4xcsjjgw";
   };
 
+  cld = assert !isPhp7; mkDerivation {
+    name = "php-cld-${version}";
+    version = "5.0.0";
+
+    buildInputs = [ pkgs.cld pkgs.zlib ];
+
+    src = pkgs.fetchFromGitHub {
+      owner = "engagor";
+      repo = "php-cld";
+      rev = "3a1c472d0e6f8df26154768ef8621363aea03534";
+      sha256 = "0dm6r8vac7v2mrcnxbm8d3khn1n76kkrvpriy0nb16gir3py9fzq";
+    };
+  };
+
   couchbase = buildPecl rec {
     name = "couchbase-${version}";
     version = "2.3.4";
