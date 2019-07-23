@@ -19,7 +19,7 @@ let
 
   apcu51 = assert isPhp7; buildPecl {
     name = "apcu-5.1.17";
-    sha256 = "0svr0r14rvnv8hs68wclx250016xkzmzl3f22f00i9rfsyvrjnhz";
+    sha256 = "14y7alvj5q17q1b544bxidavkn6i40cjbq2nv1m0k70ai5vv84bb";
     buildInputs = [ pkgs.pcre ];
     doCheck = true;
     checkTarget = "test";
