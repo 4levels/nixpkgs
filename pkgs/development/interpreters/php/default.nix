@@ -106,6 +106,7 @@ let
       configureFlags = [
         "--with-config-file-scan-dir=/etc/php.d"
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
+        "--with-php-config"
       ]
       ++ optional stdenv.isDarwin "--with-iconv=${libiconv}"
       ++ optional stdenv.isLinux  "--with-fpm-systemd"
