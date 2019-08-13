@@ -167,7 +167,7 @@ let
       ++ optional sodiumSupport "--with-sodium=${libsodium.dev}"
       ++ optional tidySupport "--with-tidy=${html-tidy}"
       ++ optional argon2Support "--with-password-argon2=${libargon2}"
-      ++ optional cldSupport "--enable-cld --with-libcld-dir=${cld}";
+      ++ optional cldSupport "--enable-cld --with-cld --with-libcld-dir=${cld}";
 
 
       hardeningDisable = [ "bindnow" ];
