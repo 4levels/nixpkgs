@@ -4,7 +4,6 @@
 , openssl, pcre, pkgconfig, sqlite, config, libjpeg, libpng, freetype
 , libxslt, libmcrypt, bzip2, icu, openldap, cyrus_sasl, libmhash, freetds
 , uwimap, pam, gmp, apacheHttpd, libiconv, systemd, libsodium, html-tidy, libargon2
-, cld ? false
 }:
 
 with lib;
@@ -54,7 +53,6 @@ let
   , sodiumSupport ? (config.php.sodium or true) && (versionAtLeast version "7.2")
   , tidySupport ? (config.php.tidy or false)
   , argon2Support ? (config.php.argon2 or true) && (versionAtLeast version "7.2")
-  , cldSupport ? config.php.cld or false
   }:
 
     let
@@ -97,8 +95,7 @@ let
         ++ optional (mssqlSupport && !stdenv.isDarwin) freetds
         ++ optional sodiumSupport libsodium
         ++ optional tidySupport html-tidy
-        ++ optional argon2Support libargon2
-        ++ optional cldSupport cld;
+        ++ optional argon2Support libargon2;
 
       CXXFLAGS = optional stdenv.cc.isClang "-std=c++11";
 
@@ -106,7 +103,6 @@ let
       configureFlags = [
         "--with-config-file-scan-dir=/etc/php.d"
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
-        "--with-php-config"
       ]
       ++ optional stdenv.isDarwin "--with-iconv=${libiconv}"
       ++ optional stdenv.isLinux  "--with-fpm-systemd"
@@ -166,8 +162,7 @@ let
       ++ optional calendarSupport "--enable-calendar"
       ++ optional sodiumSupport "--with-sodium=${libsodium.dev}"
       ++ optional tidySupport "--with-tidy=${html-tidy}"
-      ++ optional argon2Support "--with-password-argon2=${libargon2}"
-      ++ optional cldSupport "--enable-cld --with-cld --with-libcld-dir=${cld}";
+      ++ optional argon2Support "--with-password-argon2=${libargon2}";
 
 
       hardeningDisable = [ "bindnow" ];
@@ -231,17 +226,6 @@ let
     };
 
 in {
-
-  php56 = generic {
-    version = "5.6.38";
-    sha256 = "00xw7rcq36dlrzgx9nr96jc64gnnrxjxkkpmkr1y8fynpldj6nyn";
-  };
-
-  php70 = generic {
-    version = "7.0.32";
-    sha256 = "1qcjch3293h3fwci767x9rih3nrvz02rhn33hvx8l5q8kk7xis2n";
-  };
-
   php71 = generic {
     version = "7.1.30";
     sha256 = "1czcf5qwk727sdzx5n4wvsxvl50jx6d5x8ws1dqx46fa9xvm0j36";

@@ -2323,13 +2323,13 @@ with pkgs;
   elk5Version = "5.6.9";
   elk6Version = "6.5.1";
 
-  elasticsearch = callPackage ../servers/search/elasticsearch { };
-  elasticsearch2 = callPackage ../servers/search/elasticsearch/2.x.nix { };
   elasticsearch5 = callPackage ../servers/search/elasticsearch/5.x.nix { };
-  elasticsearch6 = callPackage ../servers/search/elasticsearch/6.x.nix { };
-  elasticsearch6-oss = callPackage ../servers/search/elasticsearch/6.x.nix {
+  elasticsearch6 = callPackage ../servers/search/elasticsearch { };
+  elasticsearch6-oss = callPackage ../servers/search/elasticsearch {
     enableUnfree = false;
   };
+  elasticsearch = elasticsearch6;
+  elasticsearch-oss = elasticsearch6-oss;
 
   elasticsearchPlugins = recurseIntoAttrs (
     callPackage ../servers/search/elasticsearch/plugins.nix { }
@@ -7641,14 +7641,6 @@ with pkgs;
   php = php72;
   phpPackages = php72Packages;
 
-  php56Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
-    php = php56;
-  });
-
-  php70Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
-    php = php70;
-  });
-
   php71Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
     php = php71;
   });
@@ -7659,8 +7651,6 @@ with pkgs;
 
 
   inherit (callPackages ../development/interpreters/php { })
-    php56
-    php70
     php71
     php72;
 
