@@ -221,9 +221,9 @@ let
   };
 
   xdebug26 = assert isPhp7; buildPecl {
-    name = "xdebug-2.6.1";
+    name = "xdebug-2.7.2";
 
-    sha256 = "0xxxy6n4lv7ghi9liqx133yskg07lw316vhcds43n1sjq3b93rns";
+    sha256 = "19m40n5h339yk0g458zpbsck1lslhnjsmhrp076kzhl5l4x2iwxh";
 
     doCheck = true;
     checkTarget = "test";
