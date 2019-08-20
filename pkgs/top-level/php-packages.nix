@@ -225,7 +225,7 @@ let
 
     sha256 = "19m40n5h339yk0g458zpbsck1lslhnjsmhrp076kzhl5l4x2iwxh";
 
-    configureFlags = [ "enable-xdebug" ];
+    configureFlags = [ "--enable-xdebug" ];
 
     doCheck = true;
     checkTarget = "test";
