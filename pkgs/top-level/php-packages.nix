@@ -209,7 +209,7 @@ let
     buildInputs = [ pkgs.spidermonkey_1_8_5 ];
   };
 
-  xdebug = if isPhp7 then xdebug26 else xdebug23;
+  xdebug = if isPhp7 then xdebug27 else xdebug23;
 
   xdebug23 = assert !isPhp7; buildPecl {
     name = "xdebug-2.3.1";
@@ -220,10 +220,12 @@ let
     checkTarget = "test";
   };
 
-  xdebug26 = assert isPhp7; buildPecl {
+  xdebug27 = assert isPhp7; buildPecl {
     name = "xdebug-2.7.2";
 
     sha256 = "19m40n5h339yk0g458zpbsck1lslhnjsmhrp076kzhl5l4x2iwxh";
+
+    configureFlags = [ "enable-xdebug" ];
 
     doCheck = true;
     checkTarget = "test";
